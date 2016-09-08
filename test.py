@@ -1,9 +1,19 @@
-ACCESS_TOKEN = "EAACEdEose0cBAAI4ZB7krFTZCVGosW70LZBjX0DlhuWqOgaDcxieGerPPyiGLrY127ZBVBAEa2lB8IlNTEOnFxQwiBZAYD2XsFrXjsSUEnt1pd1GMJhatkZBGXxij9LZCiMHs4J3TJQz7Tiu1FhhZC2aKHGw1O28nnlL4nBDZCGZB87AZDZD"
+ACCESS_TOKEN = "EAACEdEose0cBABBK7IDLoA6XYdACLljSjKuJ2UKxiRpeiqfLuxnW6luV6MjDaEjwvaUf9xkBHUGKQjNtY8HyR1v3lfaqWQuaMBEFRA2bpngBQXwn5xW4m9h4LHPFWo05ygN5fpPQJuG5WTXCjhMYeWWwZAY1AMreGa7ZAfUQZDZD"
 
-from pyFB import User
+from pyFB import GraphAPIObject
 
-x = User(access_token = ACCESS_TOKEN)
-print x.info
-print x.name
-x.religion = 'Hello! Testing!'
-print x.save()
+x = GraphAPIObject(2.7,'me',fields=['bio','name','birthday'], access_token = ACCESS_TOKEN)
+y = GraphAPIObject(2.7,['10205121410262892_10210752821564655','comments'], access_token = ACCESS_TOKEN)
+# print x.info
+
+
+# print y.info
+print y.data
+
+for j in y.data:
+	temp = GraphAPIObject(2.7,[j['id']],access_token=ACCESS_TOKEN)
+	temp.delete()
+
+# print z.info
+# z.message = "You are love <3"
+# print z.save()

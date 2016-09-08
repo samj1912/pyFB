@@ -1,7 +1,7 @@
-
 import requests
 import pprint
 import copy
+
 class GraphAPI(object):
 	"""docstring for Facebook"""
 	VALID_VERSIONS = ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7']
@@ -30,26 +30,45 @@ class GraphAPI(object):
 			params.setdefault('access_token',self._access_token)
 			return requests.delete(url,params=params).json()	
 
+class GraphAPIObject(object):
 
-
-
-class User(object):
-	"""docstring for User"""
-	ALL_USER_FIELDS = []
-	def __init__(self, u_id="me",access_token=None,fields = []):
-		self.infoAPI = GraphAPI(2.7,access_token)
-		self.info = self.infoAPI.request(method = 'get',path = [u_id],params={'fields':",".join(fields)})
+	def __init__(self,version,path,access_token=None,fields=[]):
+		self.infoAPI = GraphAPI(version,access_token)
+		self.path = path
+		self.info = self.infoAPI.request(method = 'get',path = path,params={'fields':",".join(fields)})
 		for k,v in self.info.items():
 			setattr(self,k,v)
 
-	def save(self):
-		saved_params = copy.deepcopy(vars(self))
+	def save(self,post_params=None):
+		saved_params = copy.copy(vars(self))
 		saved_params.pop('infoAPI',None)
 		saved_params.pop('info',None)
-		return self.infoAPI.request(method = 'POST' ,  post_params = saved_params)
+		if post_params:
+			for key in saved_params.keys():
+				if key not in post_params:
+					del saved_params[key]
+		print saved_params				
 
+				
+		return self.infoAPI.request(method = 'POST' , path=self.path, post_params = saved_params)
 
-		
+	def delete(self):
+		return self.infoAPI.request(method = 'DELETE',path = self.path)	
+	
+class GraphAPIError(Exception):
+	
+    def __init__(self, result):
+        self.result = result
+        self.code = None
+        try:
+        	self.message = self.result['error']['message']
+        	self.type = self.result['error']['type']
+        	self.code = self.result['error']['code']
+        	self.subcode = self.result['error']['error_subcode']
+        	self.traceid = self.result['error']['fbtrace_id']
+        except:
+        	self.message = self.result	
+        Exception.__init__(self, self.message)
 
 
 
